@@ -131,21 +131,16 @@ def format_comment(rev):
 def revisions_unified_diff(from_revision, to_revision):
     if from_revision is None or to_revision is None:
         return "Diff is unavailable."
-    fromfile = u'[%s] %s #%s' % (from_revision.document.locale,
-                                 from_revision.document.title,
-                                 from_revision.id)
-    tofile = u'[%s] %s #%s' % (to_revision.document.locale,
-                               to_revision.document.title,
-                               to_revision.id)
+    fromfile = '[%s] #%s' % (from_revision.document.locale, from_revision.id)
+    tofile = '[%s] #%s' % (to_revision.document.locale, to_revision.id)
     tidy_from, errors = _massage_diff_content(from_revision.content)
     tidy_to, errors = _massage_diff_content(to_revision.content)
-    diff = u'\n'.join(difflib.unified_diff(
+    return u'\n'.join(difflib.unified_diff(
         tidy_from.splitlines(),
         tidy_to.splitlines(),
         fromfile=fromfile,
-        tofile=tofile
+        tofile=tofile,
     ))
-    return diff
 
 
 @register.function

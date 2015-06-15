@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import mock
 from nose.tools import eq_
 
@@ -8,7 +9,7 @@ from kuma.users.tests import UserTestCase
 from kuma.wiki.helpers import (absolutify, document_zone_management_links,
                                revisions_unified_diff, tojson)
 from kuma.wiki.models import DocumentZone
-from kuma.wiki.tests import revision, WikiTestCase
+from kuma.wiki.tests import document, revision, WikiTestCase
 
 
 class HelpTests(WikiTestCase):
@@ -44,6 +45,16 @@ class RevisionsUnifiedDiffTests(UserTestCase, WikiTestCase):
         except AttributeError:
             self.fail("Should not throw AttributeError")
         eq_("Diff is unavailable.", diff)
+
+    def test_from_revision_non_ascii(self):
+        doc1 = document(title=u'Gänsefüßchen', save=True)
+        rev1 = revision(document=doc1, content=u'spam', save=True)
+        doc2 = document(title=u'Außendienstüberwachlösung', save=True)
+        rev2 = revision(document=doc2, content=u'eggs', save=True)
+        try:
+            revisions_unified_diff(rev1, rev2)
+        except UnicodeEncodeError:
+            self.fail("Should not throw UnicodeEncodeError")
 
 
 class DocumentZoneTests(UserTestCase, WikiTestCase):
